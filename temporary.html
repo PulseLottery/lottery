@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Lottery Contract</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 24px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #3e8e41;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+        }
+        .button:hover {background-color: #3e8e41}
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Lottery Contract</h1>
+
+    <div id="vaultBalances">
+        <h3>Vault Balances PLS</h3>
+        <p>Hourly Vault Balance: <span id="hourlyVaultBalance"></span></p>
+        <p>Daily Vault Balance: <span id="dailyVaultBalance"></span></p>
+        <p>Weekly Vault Balance: <span id="weeklyVaultBalance"></span></p>
+        <p>Monthly Vault Balance: <span id="monthlyVaultBalance"></span></p>
+    </div>
+
+    <button class="button" id="deposit" style="background-color: blue; color: white;">Deposit</button>
+    <button class="button" id="claimHourlyReward" style="background-color: purple;">Claim Hourly Reward</button>
+    <button class="button" id="claimDailyReward" style="background-color: blue;">Claim Daily Reward</button>
+    <button class="button" id="claimWeeklyReward" style="background-color: purple;">Claim Weekly Reward</button>
+    <button class="button" id="claimMonthlyReward" style="background-color: blue;">Claim Monthly Reward</button>
+
+    <script>
+        var contract;
+        var accounts;
+
+        window.addEventListener('load', async () => {
+            if (window.ethereum) {
+                window.web3 = new Web3(ethereum);
+                try {
+                    await ethereum.enable();
+                    // Obsługa MetaMask została włączona
+
+                    // Nasłuchuj na zdarzenie accountsChanged
+                    ethereum.on('accountsChanged', function (newAccounts) {
+                        accounts = newAccounts;
+                        updateVaultBalances();
+                    });
+
+                } catch (error) {
+                    // Użytkownik odrzucił dostęp do konta...
+                }
+            } else if (window.web3) {
+                window.web3 = new Web3(web3.currentProvider);
+                // Obsługa MetaMask w starszych przeglądarkach
+            } else {
+                console.log('Wykryto przeglądarkę bez obsługi Ethereum. Zalecamy zainstalowanie MetaMask!');
+            }
+
+            // Pobierz listę dostępnych kont
+            accounts = await web3.eth.getAccounts();
+
+            // Rozpocznij aplikację
+            startApp();
+            updateVaultBalances();
+        });
+
+        function startApp() {
+            var contractAddress = '0xCd2EA9AF95C4f9c0f67F82dD8e54313B48a76b92';
+            var contractABI = [
+	{
+		"inputs": [],
+		"name": "deposit",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "Deposit",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "Reward",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "sendDailyReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "sendHourlyReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "sendMonthlyReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "sendWeeklyReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "balances",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "contractAddress",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "dailyVaultBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "dailyVaultPercentage",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "hasParticipated",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "hourlyVaultBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "hourlyVaultPercentage",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastDailyReward",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastHourlyReward",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastMonthlyReward",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastWeeklyReward",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "monthlyVaultBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "monthlyVaultPercentage",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "participants",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "weeklyVaultBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "weeklyVaultPercentage",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+            contract = new web3.eth.Contract(contractABI, contractAddress);
+
+            document.getElementById('deposit').addEventListener('click', function () {
+                contract.methods.deposit().send({ from: accounts[0], value: web3.utils.toWei("2000", "ether"), gas: 100000 });
+            });
+
+            document.getElementById('claimHourlyReward').addEventListener('click', function () {
+                contract.methods.sendHourlyReward().send({ from: accounts[0], gas: 100000 });
+            });
+
+            document.getElementById('claimDailyReward').addEventListener('click', function () {
+                contract.methods.sendDailyReward().send({ from: accounts[0], gas: 100000 });
+            });
+
+            document.getElementById('claimWeeklyReward').addEventListener('click', function () {
+                contract.methods.sendWeeklyReward().send({ from: accounts[0], gas: 100000 });
+            });
+
+            document.getElementById('claimMonthlyReward').addEventListener('click', function () {
+                contract.methods.sendMonthlyReward().send({ from: accounts[0], gas: 100000 });
+            });
+
+            // Rozpocznij automatyczne odświeżanie co 5 sekund
+            setInterval(updateVaultBalances, 5000);
+        }
+
+        // Funkcja aktualizująca stany skarbców
+        function updateVaultBalances() {
+            contract.methods.hourlyVaultBalance().call()
+                .then(function (balance) {
+                    document.getElementById('hourlyVaultBalance').textContent = web3.utils.fromWei(balance, 'ether');
+                });
+
+            contract.methods.dailyVaultBalance().call()
+                .then(function (balance) {
+                    document.getElementById('dailyVaultBalance').textContent = web3.utils.fromWei(balance, 'ether');
+                });
+
+            contract.methods.weeklyVaultBalance().call()
+                .then(function (balance) {
+                    document.getElementById('weeklyVaultBalance').textContent = web3.utils.fromWei(balance, 'ether');
+                });
+
+            contract.methods.monthlyVaultBalance().call()
+                .then(function (balance) {
+                    document.getElementById('monthlyVaultBalance').textContent = web3.utils.fromWei(balance, 'ether');
+                });
+        }
+    </script>
+</body>
+</html>
