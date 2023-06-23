@@ -5,8 +5,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script>
     <style>
         body {
-			background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
+            background-color: #121212;
+            font-family: "Roboto Condensed", Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -20,16 +20,18 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background-color: #fff;
+            background-color: #212121;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h1 {
             margin-top: 0;
+            color: #fff;
         }
         p {
             margin: 5px 0;
+            color: #fff;
         }
         .button {
             display: inline-block;
@@ -40,19 +42,33 @@
             text-decoration: none;
             outline: none;
             color: #fff;
-            background-color: #3e8e41;
+            background-color: #8e24aa;
             border: none;
-            border-radius: 10px;
-            box-shadow: 0 5px #999;
+            border-radius: 30px;
+            box-shadow: 0 5px #4c1464;
             margin-top: 10px;
+            transition: background-color 0.3s ease;
         }
         .button:hover {
-            background-color: #3e8e41;
+            background-color: #9c27b0;
         }
         .button:active {
-            background-color: #3e8e41;
-            box-shadow: 0 2px #666;
+            background-color: #9c27b0;
+            box-shadow: 0 2px #6a1b7a;
             transform: translateY(2px);
+        }
+        .footer {
+            width: 2/3;
+            font-size: 10px;
+            color: #888;
+            text-align: justify;
+            margin-top: 20px;
+        }
+        .footer-text {
+            margin-bottom: 10px;
+        }
+        .footer-list {
+            margin-left: 20px;
         }
     </style>
 </head>
@@ -63,19 +79,34 @@
         <div id="vaultBalances">
             <p>Hourly Vault Balance: <b><span id="hourlyVaultBalance"></span></b></p>
             <p>Last Hourly Reward: <span id="lastHourlyReward"></span></p>
+			<br>
             <p>Daily Vault Balance: <b><span id="dailyVaultBalance"></span></b></p>
             <p>Last Daily Reward: <span id="lastDailyReward"></span></p>
+			<br>
             <p>Weekly Vault Balance:<b><span id="weeklyVaultBalance"></span></b></p>
             <p>Last Weekly Reward: <span id="lastWeeklyReward"></span></p>
+			<br>
             <p>Monthly Vault Balance: <b><span id="monthlyVaultBalance"></span></b></p>
             <p>Last Monthly Reward: <span id="lastMonthlyReward"></span></p>
         </div>
 
-        <button class="button" id="deposit" style="background-color: blue; color: white;">Deposit</button>
-        <button class="button" id="claimHourlyReward" style="background-color: purple;">Claim Hourly Reward</button>
-        <button class="button" id="claimDailyReward" style="background-color: blue;">Claim Daily Reward</button>
-        <button class="button" id="claimWeeklyReward" style="background-color: purple;">Claim Weekly Reward</button>
-        <button class="button" id="claimMonthlyReward" style="background-color: blue;">Claim Monthly Reward</button>
+        <button class="button" id="deposit">Deposit</button>
+        <button class="button" id="claimHourlyReward">Claim Hourly Reward</button>
+        <button class="button" id="claimDailyReward">Claim Daily Reward</button>
+        <button class="button" id="claimWeeklyReward">Claim Weekly Reward</button>
+        <button class="button" id="claimMonthlyReward">Claim Monthly Reward</button>
+        
+        <div class="footer">
+            <p class="footer-text">The SimpleLottery contract is a basic lottery system where participants can deposit funds and have a chance to win prizes in random drawings. Here are the rules of this lottery:</p>
+            <ol class="footer-list">
+                <li>Deposit: Participants can make deposits to the contract using the <code>deposit()</code> function. The minimum deposit amount is 2000 PLS. Upon deposit, the participant's balance is updated, and a portion of the funds is allocated to the respective vaults (hourlyVaultBalance, dailyVaultBalance, weeklyVaultBalance, monthlyVaultBalance) according to predetermined percentage shares.</li>
+                <li>Rewards: Rewards are awarded in random drawings. The contract has four types of rewards: hourly, daily, weekly, and monthly. The rewards are paid out from the corresponding vault that accumulates the deposited funds.</li>
+                <li>Reward Distribution: To claim a reward, participants need to call the appropriate function based on the type of reward. For example, the <code>sendHourlyReward()</code> function pays out the hourly reward if at least one hour has passed since the last hourly reward distribution. Similarly, the <code>sendDailyReward()</code>, <code>sendWeeklyReward()</code>, and <code>sendMonthlyReward()</code> functions distribute the daily, weekly, and monthly rewards, respectively, while respecting the designated time constraints.</li>
+                <li>Winner Selection: The winner is randomly selected. Inside the <code>sendReward()</code> function, a random participant index is generated based on a random value. The winner receives a reward, which consists of a portion of the funds from the reward pool, and it is transferred to the winner's address. Additionally, a percentage (2%) is deducted as a commission and sent to a specific address.</li>
+                <li>Clearing Participants List: After the weekly and monthly reward distributions, the participants list is cleared by removing all participant addresses. To participate in the next drawing, participants will need to deposit funds again.</li>
+            </ol>
+            <p class="footer-text">The SimpleLottery contract provides a straightforward lottery mechanism where participants can deposit funds, and rewards are awarded through random drawings based on specified rules and time limitations.</p>
+        </div>
     </div>
 
     <script>
@@ -87,9 +118,7 @@
                 window.web3 = new Web3(ethereum);
                 try {
                     await ethereum.enable();
-                    // Obsługa MetaMask została włączona
 
-                    // Nasłuchuj na zdarzenie accountsChanged
                     ethereum.on('accountsChanged', function (newAccounts) {
                         accounts = newAccounts;
                         updateVaultBalances();
@@ -100,15 +129,12 @@
                 }
             } else if (window.web3) {
                 window.web3 = new Web3(web3.currentProvider);
-                // Obsługa MetaMask w starszych przeglądarkach
             } else {
                 console.log('Wykryto przeglądarkę bez obsługi Ethereum. Zalecamy zainstalowanie MetaMask!');
             }
 
-            // Pobierz listę dostępnych kont
             accounts = await web3.eth.getAccounts();
 
-            // Rozpocznij aplikację
             startApp();
             updateVaultBalances();
         });
@@ -444,11 +470,9 @@
                 contract.methods.sendMonthlyReward().send({ from: accounts[0], gas: 100000 });
             });
 
-            // Rozpocznij automatyczne odświeżanie co 5 sekund
             setInterval(updateVaultBalances, 5000);
         }
 
-        // Funkcja aktualizująca stany skarbców
         function updateVaultBalances() {
             contract.methods.hourlyVaultBalance().call()
                 .then(function (balance) {
@@ -489,11 +513,11 @@
                 .then(function (timestamp) {
                     document.getElementById('lastMonthlyReward').textContent = formatTimestamp(timestamp);
                 });
-			}
-			function formatTimestamp(timestamp) {
+        }
+
+        function formatTimestamp(timestamp) {
             const date = new Date(timestamp * 1000);
             return date.toLocaleString();
-			
         }
     </script>
 </body>
