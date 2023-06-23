@@ -6,7 +6,7 @@ const port = 3000; // Wybierz dowolny numer portu, na którym chcesz uruchomić 
 
 const server = http.createServer((req, res) => {
   //const filePath = path.join(__dirname, req.url === '/' ? 'index_lottery.html' : req.url);
-  const filePath = path.join(__dirname, req.url === '/' ? 'temporary.html' : req.url);
+  const filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
   const fileExtension = path.extname(filePath);
   const contentType = getContentType(fileExtension);
 
