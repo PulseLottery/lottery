@@ -1,17 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Simple Lottery Contract</title>
+    <title>Pulse Lottery</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script>
     <style>
         body {
-            background-color: #f0f0f0;
+			background-color: #f0f0f0;
             font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-top: 0;
+        }
+        p {
+            margin: 5px 0;
         }
         .button {
             display: inline-block;
-            padding: 15px 25px;
-            font-size: 24px;
+            padding: 10px 20px;
+            font-size: 20px;
             cursor: pointer;
             text-align: center;
             text-decoration: none;
@@ -19,33 +42,41 @@
             color: #fff;
             background-color: #3e8e41;
             border: none;
-            border-radius: 15px;
-            box-shadow: 0 9px #999;
+            border-radius: 10px;
+            box-shadow: 0 5px #999;
+            margin-top: 10px;
         }
-        .button:hover {background-color: #3e8e41}
+        .button:hover {
+            background-color: #3e8e41;
+        }
         .button:active {
             background-color: #3e8e41;
-            box-shadow: 0 5px #666;
-            transform: translateY(4px);
+            box-shadow: 0 2px #666;
+            transform: translateY(2px);
         }
     </style>
 </head>
 <body>
-    <h1>Simple Lottery Contract</h1>
+    <div class="container">
+        <h1>Pulsechain Lottery</h1>
 
-    <div id="vaultBalances">
-        <h3>Vault Balances PLS</h3>
-        <p>Hourly Vault Balance: <span id="hourlyVaultBalance"></span></p>
-        <p>Daily Vault Balance: <span id="dailyVaultBalance"></span></p>
-        <p>Weekly Vault Balance: <span id="weeklyVaultBalance"></span></p>
-        <p>Monthly Vault Balance: <span id="monthlyVaultBalance"></span></p>
+        <div id="vaultBalances">
+            <p>Hourly Vault Balance: <b><span id="hourlyVaultBalance"></span></b></p>
+            <p>Last Hourly Reward: <span id="lastHourlyReward"></span></p>
+            <p>Daily Vault Balance: <b><span id="dailyVaultBalance"></span></b></p>
+            <p>Last Daily Reward: <span id="lastDailyReward"></span></p>
+            <p>Weekly Vault Balance:<b><span id="weeklyVaultBalance"></span></b></p>
+            <p>Last Weekly Reward: <span id="lastWeeklyReward"></span></p>
+            <p>Monthly Vault Balance: <b><span id="monthlyVaultBalance"></span></b></p>
+            <p>Last Monthly Reward: <span id="lastMonthlyReward"></span></p>
+        </div>
+
+        <button class="button" id="deposit" style="background-color: blue; color: white;">Deposit</button>
+        <button class="button" id="claimHourlyReward" style="background-color: purple;">Claim Hourly Reward</button>
+        <button class="button" id="claimDailyReward" style="background-color: blue;">Claim Daily Reward</button>
+        <button class="button" id="claimWeeklyReward" style="background-color: purple;">Claim Weekly Reward</button>
+        <button class="button" id="claimMonthlyReward" style="background-color: blue;">Claim Monthly Reward</button>
     </div>
-
-    <button class="button" id="deposit" style="background-color: blue; color: white;">Deposit</button>
-    <button class="button" id="claimHourlyReward" style="background-color: purple;">Claim Hourly Reward</button>
-    <button class="button" id="claimDailyReward" style="background-color: blue;">Claim Daily Reward</button>
-    <button class="button" id="claimWeeklyReward" style="background-color: purple;">Claim Weekly Reward</button>
-    <button class="button" id="claimMonthlyReward" style="background-color: blue;">Claim Monthly Reward</button>
 
     <script>
         var contract;
@@ -424,9 +455,19 @@
                     document.getElementById('hourlyVaultBalance').textContent = web3.utils.fromWei(balance, 'ether');
                 });
 
+            contract.methods.lastHourlyReward().call()
+                .then(function (timestamp) {
+                    document.getElementById('lastHourlyReward').textContent = formatTimestamp(timestamp);
+                });
+
             contract.methods.dailyVaultBalance().call()
                 .then(function (balance) {
                     document.getElementById('dailyVaultBalance').textContent = web3.utils.fromWei(balance, 'ether');
+                });
+
+            contract.methods.lastDailyReward().call()
+                .then(function (timestamp) {
+                    document.getElementById('lastDailyReward').textContent = formatTimestamp(timestamp);
                 });
 
             contract.methods.weeklyVaultBalance().call()
@@ -434,10 +475,25 @@
                     document.getElementById('weeklyVaultBalance').textContent = web3.utils.fromWei(balance, 'ether');
                 });
 
+            contract.methods.lastWeeklyReward().call()
+                .then(function (timestamp) {
+                    document.getElementById('lastWeeklyReward').textContent = formatTimestamp(timestamp);
+                });
+
             contract.methods.monthlyVaultBalance().call()
                 .then(function (balance) {
                     document.getElementById('monthlyVaultBalance').textContent = web3.utils.fromWei(balance, 'ether');
                 });
+
+            contract.methods.lastMonthlyReward().call()
+                .then(function (timestamp) {
+                    document.getElementById('lastMonthlyReward').textContent = formatTimestamp(timestamp);
+                });
+			}
+			function formatTimestamp(timestamp) {
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleString();
+			
         }
     </script>
 </body>
