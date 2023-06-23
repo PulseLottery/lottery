@@ -57,6 +57,21 @@
             box-shadow: 0 2px #6a1b7a;
             transform: translateY(2px);
         }
+        .button-deposit {
+            background-color: #00eaff; /* Nowy kolor przycisku "Deposit" */
+        }
+        .button-hourly {
+            background-color: #0089ff; /* Nowy kolor przycisku "Claim Hourly Reward" */
+        }
+        .button-daily {
+            background-color: #b50df2; /* Nowy kolor przycisku "Claim Daily Reward" */
+        }
+        .button-weekly {
+            background-color: #f40b65; /* Nowy kolor przycisku "Claim Weekly Reward" */
+        }
+        .button-monthly {
+            background-color: #ff0000; /* Nowy kolor przycisku "Claim Monthly Reward" */
+        }
         .footer {
         width: 33.33%; /* 1/3 szerokości ekranu */
         font-size: 10px;
@@ -92,11 +107,11 @@
             <p>Last Monthly Reward: <span id="lastMonthlyReward"></span></p>
         </div>
 
-        <button class="button" id="deposit">Deposit</button>
-        <button class="button" id="claimHourlyReward">Claim Hourly Reward</button>
-        <button class="button" id="claimDailyReward">Claim Daily Reward</button>
-        <button class="button" id="claimWeeklyReward">Claim Weekly Reward</button>
-        <button class="button" id="claimMonthlyReward">Claim Monthly Reward</button>
+        <button class="button button-deposit" id="deposit">Deposit</button>
+        <button class="button button-hourly" id="claimHourlyReward">Claim Hourly Reward</button>
+        <button class="button button-daily" id="claimDailyReward">Claim Daily Reward</button>
+        <button class="button button-weekly" id="claimWeeklyReward">Claim Weekly Reward</button>
+        <button class="button button-monthly" id="claimMonthlyReward">Claim Monthly Reward</button>
         
         <div class="footer">
             <p class="footer-text">The SimpleLottery contract is a basic lottery system where participants can deposit funds and have a chance to win prizes in random drawings. Here are the rules of this lottery:</p>
