@@ -1,6 +1,6 @@
 The SimpleLottery contract is a basic lottery system where participants can deposit funds and have a chance to win prizes in random drawings. Here are the rules of this lottery:
 
-1. Deposit: Participants can make deposits to the contract using the `deposit()` function. The minimum deposit amount is 2000 wei. Upon deposit, the participant's balance is updated, and a portion of the funds is allocated to the respective vaults (hourlyVaultBalance, dailyVaultBalance, weeklyVaultBalance, monthlyVaultBalance) according to predetermined percentage shares.
+1. Deposit: Participants can make deposits to the contract using the `deposit()` function. The minimum deposit amount is 2000 PLS. Upon deposit, the participant's balance is updated, and a portion of the funds is allocated to the respective vaults (hourlyVaultBalance, dailyVaultBalance, weeklyVaultBalance, monthlyVaultBalance) according to predetermined percentage shares.
 
 2. Rewards: Rewards are awarded in random drawings. The contract has four types of rewards: hourly, daily, weekly, and monthly. The rewards are paid out from the corresponding vault that accumulates the deposited funds.
 
