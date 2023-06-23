@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Pulse Lottery</title>
+	<meta property="og:image" content="https://s2.coinmarketcap.com/static/img/coins/64x64/11145.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script>
     <style>
         body {
@@ -114,13 +115,26 @@
         <div class="footer">
             <p class="footer-text">The SimpleLottery contract is a basic lottery system where participants can deposit funds and have a chance to win prizes in random drawings. Here are the rules of this lottery:</p>
             <ol class="footer-list">
-                <li>Deposit: Participants can make deposits to the contract using the <code>deposit()</code> function. The minimum deposit amount is 2000 PLS. Upon deposit, the participant's balance is updated, and a portion of the funds is allocated to the respective vaults (hourlyVaultBalance, dailyVaultBalance, weeklyVaultBalance, monthlyVaultBalance) according to predetermined percentage shares.</li>
+                <li>Participation:
+   - To participate in the lottery, a participant needs to call the `deposit()` function and deposit at least <b>2000 PLS</b>.
+   - If the participant has not participated before, they will be added to the list of participants.
+   - Upon deposit, the participant's funds are distributed into four "vaults": the hourly vault, daily vault, weekly vault, and monthly vault.</li>
                 <li>Rewards: Rewards are awarded in random drawings. The contract has four types of rewards: hourly, daily, weekly, and monthly. The rewards are paid out from the corresponding vault that accumulates the deposited funds.</li>
-                <li>Reward Distribution: To claim a reward, participants need to call the appropriate function based on the type of reward. For example, the <code>sendHourlyReward()</code> function pays out the hourly reward if at least one hour has passed since the last hourly reward distribution. Similarly, the <code>sendDailyReward()</code>, <code>sendWeeklyReward()</code>, and <code>sendMonthlyReward()</code> functions distribute the daily, weekly, and monthly rewards, respectively, while respecting the designated time constraints.</li>
-                <li>Winner Selection: The winner is randomly selected. Inside the <code>sendReward()</code> function, a random participant index is generated based on a random value. The winner receives a reward, which consists of a portion of the funds from the reward pool, and it is transferred to the winner's address. Additionally, a percentage (2%) is deducted as a commission and sent to a specific address.</li>
-                <li>Clearing Participants List: After the weekly and monthly reward distributions, the participants list is cleared by removing all participant addresses. To participate in the next drawing, participants will need to deposit funds again.</li>
+                <li>Rewards:
+   - Rewards are awarded in random drawings from each vault.
+   - The contract has four types of rewards: hourly, daily, weekly, and monthly.
+   - Each vault accumulates deposited funds, and it is cleared when a reward is distributed.
+   - The percentage distribution in each vault is defined by the variables `hourlyVaultPercentage`, `dailyVaultPercentage`, `weeklyVaultPercentage`, and `monthlyVaultPercentage`.</li>
+                <li>Reward Distribution:
+   - To claim a reward, a participant needs to call the corresponding function based on the type of reward they want to claim. For example, the `sendHourlyReward()` function distributes the hourly reward.
+   - There are specific time constraints that need to be met before a reward can be claimed. For example, for the hourly reward, at least 1 hour must have passed since the last hourly reward distribution.
+   - The winner is randomly selected from the list of participants based on a random index generated using factors like time and participant's address.
+   - The winner receives a reward, which consists of a portion of the funds from the corresponding vault, and a commission (2% of the funds) is deducted and sent to a specific address.</li>
+                <li>Clearing Participants List:
+   - After the weekly and monthly reward distributions, the participants list is cleared by removing all participant addresses.
+   - To participate in the next drawing, participants will need to deposit funds again.</li>
             </ol>
-            <p class="footer-text">The SimpleLottery contract provides a straightforward lottery mechanism where participants can deposit funds, and rewards are awarded through random drawings based on specified rules and time limitations.</p>
+            <p class="footer-text">These are the basic rules of operation and participation in the lottery described in the `SimpleLottery` contract.</p>
         </div>
     </div>
 
