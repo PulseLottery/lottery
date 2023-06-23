@@ -1,0 +1,13 @@
+The SimpleLottery contract is a basic lottery system where participants can deposit funds and have a chance to win prizes in random drawings. Here are the rules of this lottery:
+
+1. Deposit: Participants can make deposits to the contract using the `deposit()` function. The minimum deposit amount is 2000 wei. Upon deposit, the participant's balance is updated, and a portion of the funds is allocated to the respective vaults (hourlyVaultBalance, dailyVaultBalance, weeklyVaultBalance, monthlyVaultBalance) according to predetermined percentage shares.
+
+2. Rewards: Rewards are awarded in random drawings. The contract has four types of rewards: hourly, daily, weekly, and monthly. The rewards are paid out from the corresponding vault that accumulates the deposited funds.
+
+3. Reward Distribution: To claim a reward, participants need to call the appropriate function based on the type of reward. For example, the `sendHourlyReward()` function pays out the hourly reward if at least one hour has passed since the last hourly reward distribution. Similarly, the `sendDailyReward()`, `sendWeeklyReward()`, and `sendMonthlyReward()` functions distribute the daily, weekly, and monthly rewards, respectively, while respecting the designated time constraints.
+
+4. Winner Selection: The winner is randomly selected. Inside the `sendReward()` function, a random participant index is generated based on a random value. The winner receives a reward, which consists of a portion of the funds from the reward pool, and it is transferred to the winner's address. Additionally, a percentage (2%) is deducted as a commission and sent to a specific address.
+
+5. Clearing Participants List: After the weekly and monthly reward distributions, the participants list is cleared by removing all participant addresses. To participate in the next drawing, participants will need to deposit funds again.
+
+The SimpleLottery contract provides a straightforward lottery mechanism where participants can deposit funds, and rewards are awarded through random drawings based on specified rules and time limitations.
