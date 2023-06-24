@@ -299,7 +299,7 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
+			 }
 		],
 		"stateMutability": "view",
 		"type": "function"
@@ -555,6 +555,11 @@
                     var elapsedSeconds = currentTimestamp - timestamp;
                     var claimButton = document.getElementById('claimHourlyReward');
                     claimButton.disabled = elapsedSeconds < 3600;
+                    if (claimButton.disabled) {
+                        claimButton.innerHTML = 'Claim Hourly Reward (' + formatTimeRemaining(3600 - elapsedSeconds) + ')';
+                    } else {
+                        claimButton.innerHTML = 'Claim Hourly Reward';
+                    }
                 });
 
             contract.methods.lastDailyReward().call()
@@ -562,6 +567,11 @@
                     var elapsedSeconds = currentTimestamp - timestamp;
                     var claimButton = document.getElementById('claimDailyReward');
                     claimButton.disabled = elapsedSeconds < 86400;
+                    if (claimButton.disabled) {
+                        claimButton.innerHTML = 'Claim Daily Reward (' + formatTimeRemaining(86400 - elapsedSeconds) + ')';
+                    } else {
+                        claimButton.innerHTML = 'Claim Daily Reward';
+                    }
                 });
 
             contract.methods.lastWeeklyReward().call()
@@ -569,6 +579,11 @@
                     var elapsedSeconds = currentTimestamp - timestamp;
                     var claimButton = document.getElementById('claimWeeklyReward');
                     claimButton.disabled = elapsedSeconds < 604800;
+                    if (claimButton.disabled) {
+                        claimButton.innerHTML = 'Claim Weekly Reward (' + formatTimeRemaining(604800 - elapsedSeconds) + ')';
+                    } else {
+                        claimButton.innerHTML = 'Claim Weekly Reward';
+                    }
                 });
 
             contract.methods.lastMonthlyReward().call()
@@ -576,7 +591,32 @@
                     var elapsedSeconds = currentTimestamp - timestamp;
                     var claimButton = document.getElementById('claimMonthlyReward');
                     claimButton.disabled = elapsedSeconds < 2592000;
+                    if (claimButton.disabled) {
+                        claimButton.innerHTML = 'Claim Monthly Reward (' + formatTimeRemaining(2592000 - elapsedSeconds) + ')';
+                    } else {
+                        claimButton.innerHTML = 'Claim Monthly Reward';
+                    }
                 });
+        }
+
+        function formatTimeRemaining(seconds) {
+            var hours = Math.floor(seconds / 3600);
+            var minutes = Math.floor((seconds % 3600) / 60);
+            var remainingSeconds = seconds % 60;
+
+            var timeString = '';
+
+            if (hours > 0) {
+                timeString += hours + 'h ';
+            }
+
+            if (minutes > 0) {
+                timeString += minutes + 'm ';
+            }
+
+            timeString += remainingSeconds + 's';
+
+            return timeString;
         }
     </script>
 </body>
