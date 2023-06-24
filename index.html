@@ -112,7 +112,7 @@
         <a href="https://scan.pulsechain.com/address/0x5a6f0a3ee604EED66B603Db8fa963bDbeB91671b/" target="_blank" style="display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; margin-top: 10px;">SEE CONTRACT</a>
 
         <div class="footer">
-            <p class="footer-text">The SimpleLottery contract is a basic lottery system where participants can deposit funds and have a chance to win prizes in random drawings. Here are the rules of this contract:</p>
+            <p class="footer-text">The SimpleLottery contract is a basic system where participants can deposit funds and have a chance to win prizes in random drawings. Here are the rules of this contract:</p>
             <ol class="footer-list">
                 <li>Participation:
    - To participate in the lottery, a participant needs to call the `deposit()` function and deposit at least <b>2000 PLS</b>.
@@ -126,7 +126,7 @@
    - The winner is randomly selected from the list of participants based on a random index generated using factors like time and participant's address.
    - The winner receives a reward, which consists of a portion of the funds from the corresponding vault, and a commission (2% of the funds) is deducted and sent to a creator address.</li>
                 <li>Clearing Participants List:
-   - After the monthly reward distributions, the participants list is cleared by removing all participant addresses.
+   - After the weekly and monthly reward distributions, the participants list is cleared by removing all participant addresses.
    - To participate in the next drawing, participants will need to deposit funds again.</li>
             </ol>
             <p class="footer-text">These are the basic principles of operation and participation described in the `SimpleLottery` contract.</p>
@@ -146,6 +146,7 @@
                     ethereum.on('accountsChanged', function (newAccounts) {
                         accounts = newAccounts;
                         updateVaultBalances();
+                        updateButtonStates();
                     });
 
                 } catch (error) {
@@ -161,6 +162,7 @@
 
             startApp();
             updateVaultBalances();
+            updateButtonStates();
         });
 
         function startApp() {
@@ -495,6 +497,7 @@
             });
 
             setInterval(updateVaultBalances, 5000);
+            setInterval(updateButtonStates, 5000);
         }
 
         function updateVaultBalances() {
@@ -542,6 +545,38 @@
         function formatTimestamp(timestamp) {
             const date = new Date(timestamp * 1000);
             return date.toLocaleString();
+        }
+
+        function updateButtonStates() {
+            var currentTimestamp = Math.floor(Date.now() / 1000);
+
+            contract.methods.lastHourlyReward().call()
+                .then(function (timestamp) {
+                    var elapsedSeconds = currentTimestamp - timestamp;
+                    var claimButton = document.getElementById('claimHourlyReward');
+                    claimButton.disabled = elapsedSeconds < 3600;
+                });
+
+            contract.methods.lastDailyReward().call()
+                .then(function (timestamp) {
+                    var elapsedSeconds = currentTimestamp - timestamp;
+                    var claimButton = document.getElementById('claimDailyReward');
+                    claimButton.disabled = elapsedSeconds < 86400;
+                });
+
+            contract.methods.lastWeeklyReward().call()
+                .then(function (timestamp) {
+                    var elapsedSeconds = currentTimestamp - timestamp;
+                    var claimButton = document.getElementById('claimWeeklyReward');
+                    claimButton.disabled = elapsedSeconds < 604800;
+                });
+
+            contract.methods.lastMonthlyReward().call()
+                .then(function (timestamp) {
+                    var elapsedSeconds = currentTimestamp - timestamp;
+                    var claimButton = document.getElementById('claimMonthlyReward');
+                    claimButton.disabled = elapsedSeconds < 2592000;
+                });
         }
     </script>
 </body>
