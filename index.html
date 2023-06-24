@@ -475,23 +475,23 @@
             contract = new web3.eth.Contract(contractABI, contractAddress);
 
             document.getElementById('deposit').addEventListener('click', function () {
-                contract.methods.deposit().send({ from: accounts[0], value: web3.utils.toWei("2000", "ether"), gas: 100000 });
+                contract.methods.deposit().send({ from: accounts[0], value: web3.utils.toWei("2000", "ether"), gas: 300000 });
             });
 
             document.getElementById('claimHourlyReward').addEventListener('click', function () {
-                contract.methods.sendHourlyReward().send({ from: accounts[0], gas: 100000 });
+                contract.methods.sendHourlyReward().send({ from: accounts[0], gas: 300000 });
             });
 
             document.getElementById('claimDailyReward').addEventListener('click', function () {
-                contract.methods.sendDailyReward().send({ from: accounts[0], gas: 100000 });
+                contract.methods.sendDailyReward().send({ from: accounts[0], gas: 300000 });
             });
 
             document.getElementById('claimWeeklyReward').addEventListener('click', function () {
-                contract.methods.sendWeeklyReward().send({ from: accounts[0], gas: 100000 });
+                contract.methods.sendWeeklyReward().send({ from: accounts[0], gas: 300000 });
             });
 
             document.getElementById('claimMonthlyReward').addEventListener('click', function () {
-                contract.methods.sendMonthlyReward().send({ from: accounts[0], gas: 100000 });
+                contract.methods.sendMonthlyReward().send({ from: accounts[0], gas: 300000 });
             });
 
             setInterval(updateVaultBalances, 5000);
